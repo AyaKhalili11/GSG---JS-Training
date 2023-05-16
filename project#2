@@ -1,0 +1,169 @@
+const readline = require('readline');
+
+// Task object constructor
+function Task(description, dueDate, priority) {
+  this.description = description;
+  this.dueDate = dueDate;
+  this.priority = priority;
+  this.completed = false;
+}
+
+// An array to hold all tasks
+const tasks = [];
+
+// A readline interface to read user input
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Display the menu and get user input
+function showMenu() {
+  console.log("***************************");
+  console.log("Welcome to JS TODO-APP");
+  console.log("***************************");
+  console.log("Select an action:");
+  console.log("1) Add a new task");
+  console.log("2) List all tasks");
+  console.log("3) List completed tasks");
+  console.log("4) Mark a task as done");
+  console.log("5) Delete a task");
+  console.log("6) Sort tasks by the due date");
+  console.log("7) Sort tasks by priority");
+  console.log("8) Clear all tasks");
+  console.log("***************************");
+
+  rl.question("What's your choice? ", function(choice) {
+    handleMenu(parseInt(choice));
+  });
+}
+
+// Handle user input based on the selected menu option
+function handleMenu(choice) {
+  switch (choice) {
+    case 1:
+      addTask();
+      break;
+    case 2:
+      listAllTasks();
+      break;
+    case 3:
+      listCompletedTasks();
+      break;
+    case 4:
+      markTaskAsDone();
+      break;
+    case 5:
+      deleteTask();
+      break;
+    case 6:
+      sortTasksByDueDate();
+      break;
+    case 7:
+      sortTasksByPriority();
+      break;
+    case 8:
+      clearAllTasks();
+      break;
+    default:
+      console.log("Invalid choice. Please try again.");
+      showMenu();
+      break;
+  }
+}
+
+// Add a new task to the list
+function addTask() {
+  rl.question("Enter task description: ", function(description) {
+    rl.question("Enter due date (YYYY-MM-DD): ", function(dueDate) {
+      rl.question("Enter priority (1-5): ", function(priority) {
+        const task = new Task(description, dueDate, priority);
+        tasks.push(task);
+        console.log("Task added successfully.");
+        showMenu();
+      });
+    });
+  });
+}
+
+// List all tasks in the list
+function listAllTasks() {
+  console.log("All tasks:");
+  tasks.forEach(function(task, index) {
+    console.log((index + 1) + ") " + task.description +
+      " (due on " + task.dueDate + ", priority " + task.priority + ")" +
+      (task.completed ? " [COMPLETED]" : ""));
+  });
+  showMenu();
+}
+
+// List only completed tasks
+function listCompletedTasks() {
+  const completedTasks = tasks.filter(function(task) {
+    return task.completed;
+  });
+  console.log("Completed tasks:");
+  completedTasks.forEach(function(task, index) {
+    console.log((index + 1) + ") " + task.description +
+      " (due on " + task.dueDate + ", priority " + task.priority + ")");
+  });
+  showMenu();
+}
+
+// Mark a task as completed
+function markTaskAsDone() {
+  rl.question("Enter task number to mark as done: ", function(taskNumber) {
+      const taskIndex = taskNumber - 1;
+      if (taskIndex < 0 || taskIndex >= tasks.length) {
+        console.log("Invalid task number. Please try again.");
+        showMenu();
+      } else {
+        tasks[taskIndex].completed = true;
+        console.log("Task marked as done.");
+        showMenu();
+      }
+    });
+}
+
+// Delete a task from the list
+function deleteTask() {
+  rl.question("Enter task number to delete: ", function(taskNumber) {
+    const taskIndex = taskNumber - 1;
+    if (taskIndex < 0 || taskIndex >= tasks.length) {
+      console.log("Invalid task number. Please try again.");
+      showMenu();
+    } else {
+      tasks.splice(taskIndex, 1);
+      console.log("Task deleted.");
+      showMenu();
+    }
+  });
+}
+
+// Sort tasks by due date
+function sortTasksByDueDate() {
+  tasks.sort(function(a, b) {
+    return new Date(a.dueDate) - new Date(b.dueDate);
+  });
+  console.log("Tasks sorted by due date.");
+  showMenu();
+}
+
+// Sort tasks by priority
+function sortTasksByPriority() {
+  tasks.sort(function(a, b) {
+    return b.priority - a.priority;
+  });
+  console.log("Tasks sorted by priority.");
+  showMenu();
+}
+
+// Clear all tasks from the list
+function clearAllTasks() {
+  tasks.length = 0;
+  console.log("All tasks cleared.");
+  showMenu();
+}
+
+// Start the app by showing the menu
+showMenu();
